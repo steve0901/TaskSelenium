@@ -8,13 +8,14 @@ import org.testng.Assert;
 import org.testng.annotations.AfterTest;
 import org.testng.annotations.Test;
 
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 public class GoogleMailTest {
 	final Logger LOGGER = LogManager.getLogger(BrowserTest.class);
 
 	WebDriver driver;
-
+	String message;
 	@Test
 	public void sendLetterTest() {
 		System.setProperty("webdriver.chrome.driver", "src/main/resources/chromedriver.exe");
@@ -29,14 +30,15 @@ public class GoogleMailTest {
 		passwordInputBar.sendKeys("synoviat1994");
 		WebElement enterButtom = driver.findElement(By.id("passwordNext"));
 		enterButtom.click();
-		WebElement newletterButton = driver.findElement(By.xpath("//div[text()='Написати']"));
+		WebElement newletterButton = driver.findElement(By.cssSelector("div.T-I.J-J5-Ji.T-I-KE.L3[role='button']"));
 		newletterButton.click();
 		WebElement inputAdresseeBar = driver.findElement(By.cssSelector("textarea[name='to']"));
 		inputAdresseeBar.sendKeys("stepan.synoviat@gmail.com");
 		WebElement inputSubjectBar = driver.findElement(By.cssSelector("input[name='subjectbox']"));
 		inputSubjectBar.sendKeys("Test");
 		WebElement inputTextArea = driver.findElement(By.cssSelector("div[role='textbox']"));
-		inputTextArea.sendKeys("Hello");
+		message = "Hello "+ generateRandomString();
+		inputTextArea.sendKeys(message);
 		WebElement sendButton = driver.findElement(By.cssSelector("div.T-I.J-J5-Ji.aoO.v7.T-I-atl.L3[role='button']"));
 		sendButton.click();
 		WebElement sendDialogWindow = driver.findElement(By.cssSelector("div.nH.Hd[role='dialog']"));
@@ -44,6 +46,14 @@ public class GoogleMailTest {
 		WebElement sentLetterConfirmation = driver.findElement(By.xpath("//*[@id=\"link_vsm\"]"));
 		Assert.assertTrue(sentLetterConfirmation.isDisplayed());
 		sentLetterConfirmation.click();
+		WebElement sentLetter = driver.findElement(By.xpath("//div[@role='list']//div[@dir='ltr']"));
+		Assert.assertEquals(sentLetter.getText(), message);
+	}
+
+
+	public String generateRandomString() {
+		String uuid = UUID.randomUUID().toString();
+		return uuid;
 	}
 
 	@AfterTest
